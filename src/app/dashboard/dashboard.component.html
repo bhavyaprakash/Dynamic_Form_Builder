@@ -1,0 +1,12 @@
+<div class="dashboard-container">
+    <!-- Logout button (Top-right corner) -->
+    <button class="logout-button" mat-raised-button color="warn" (click)="logout()">Logout</button>
+  
+    <h2>Dashboard</h2>
+  
+    <!-- Show Form Builder button only for Admins -->
+    <button *ngIf="userRole === 'admin'" mat-raised-button color="primary" (click)="goToFormBuilder()">
+      Go to Form Builder
+    </button>
+  </div>
+  

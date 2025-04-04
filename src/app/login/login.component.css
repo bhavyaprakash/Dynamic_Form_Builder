@@ -1,0 +1,33 @@
+/* Full-page centering */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+  }
+  
+  /* White login box */
+  .login-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Spacing between elements */
+  }
+  
+  /* Center the MatFormField */
+  mat-form-field {
+    width: 100%;
+  }
+  
+  /* Button styling */
+  button {
+    width: 100%;
+    font-size: 1rem;
+  }
+  
