@@ -1,1 +1,41 @@
-<p>form-builder works!</p>
+<div class="container">
+    <h2 class="form-builder-title text-center">Form Builder</h2>
+
+    <div class="box-container">
+        <!-- Available Fields -->
+        <div cdkDropList id="availableFieldsList" [cdkDropListData]="availableFields"
+            [cdkDropListConnectedTo]="['formFieldsList']" (cdkDropListDropped)="drop($event)" class="field-list">
+            <h3>Available Fields</h3>
+            <div *ngFor="let field of availableFields" cdkDrag class="drag-item">
+                {{ field.label }}
+            </div>
+        </div>
+
+        <mat-icon>compare_arrows</mat-icon>
+
+        <!-- Form Builder Drop Area -->
+        <div cdkDropList id="formFieldsList" [cdkDropListData]="formFields"
+            [cdkDropListConnectedTo]="['availableFieldsList']" (cdkDropListDropped)="drop($event)" class="form-builder">
+            <h3>Form Builder</h3>
+            <div *ngFor="let field of formFields; let i = index" cdkDrag class="drag-item" >
+                {{ field.label }}
+                <div class="icon-group">
+                    <!-- Edit Button -->
+                    <mat-icon class="icon edit-icon" (click)="editField(field)">edit</mat-icon>
+        
+                    <!-- Delete Button -->
+                    <mat-icon class="icon delete-icon" (click)="deleteField(i)">close</mat-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="action">
+        <mat-form-field appearance="outline">
+            <mat-label>Form Name</mat-label>
+            <input matInput [(ngModel)]="formName" placeholder="Enter form name">
+          </mat-form-field>
+          <button (click)="resetForm()" class="reset-btn">Reset Form</button>
+          <button (click)="saveForm()" class="save-btn">Save Form</button>
+    </div>
+    
+</div>

@@ -1,0 +1,158 @@
+/* Full-screen container */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .box-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    /* height: 100vh; */
+    width: 100vw; 
+  }
+
+  /* Centered Heading */
+  .form-builder-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Drop Zones */
+  .field-list, .form-builder {
+    min-height: 50vh;
+    padding: 20px;
+    border: 2px solid #aaa;
+    background: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  /* Arrows */
+  .arrow {
+    font-size: 24px;
+    font-weight: bold;
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  
+  /* Drop lists - Restored to Original Height */
+  .field-list, .form-builder {
+    flex: 1;
+    max-width: 400px;
+    min-height: 30vh; /* Restored to the original smaller height */
+    padding: 20px;
+    border: 2px solid #aaa; /* Solid border */
+    background: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Raised effect */
+    border-radius: 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    max-height: 50vh;
+  }
+  
+  /* Drag Items */
+  .drag-item {
+    display: block;
+    padding: 12px;
+    margin: 8px 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: grab;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background 0.2s ease;
+  }
+  
+  /* Field items */
+  cdk-drag {
+    display: block;
+    padding: 12px;
+    margin: 8px 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: grab;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Slight raised effect */
+  }
+  
+  cdk-drag:hover {
+    background: #f9f9f9;
+  }
+  
+  .drag-item:hover {
+    background: #f9f9f9;
+}
+
+.icon-group {
+    display: flex;
+    position: relative;
+    bottom: 22px;
+  }
+
+.save-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 20%;
+    height: 50px;
+}
+
+.save-btn:hover {
+    background-color: #0056b3;
+}
+
+.icon {
+    cursor: pointer;
+    position: absolute;
+    
+  }
+  
+  .edit-icon {
+    color: #1976d2;
+    right: 10%;
+  }
+  
+  .delete-icon {
+    color: red;
+    right: 0%;
+  }
+
+  .reset-btn {
+    background-color: #f44336;
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 20%;
+    height: 50px;
+  }
+  
+  .reset-btn:hover {
+    background-color: #d32f2f;
+  }
+  
+  .action {
+    display: flex;
+    width: 70%;
+    gap: 5%;
+  }
+
+  mat-form-field{
+    width: 50%;
+  }

@@ -1,0 +1,26 @@
+<div class="field-config">
+  <h3>Edit Field</h3>
+  <form [formGroup]="fieldConfigForm">
+
+    <ng-container *ngFor="let field of fieldConfig">
+      <ng-container *ngIf="shouldShowField(field)">
+        <!-- Checkbox -->
+        <mat-checkbox *ngIf="field.type === 'checkbox'" [formControlName]="field.key">
+          {{ field.label }}
+        </mat-checkbox>
+    
+        <!-- Other input fields -->
+        <mat-form-field *ngIf="field.type !== 'checkbox'" appearance="outline">
+          <mat-label>{{ field.label }}</mat-label>
+          <input matInput [type]="field.type" [formControlName]="field.key" />
+        </mat-form-field>
+      </ng-container>
+    </ng-container>       
+
+    <div class="form-actions">
+      <button mat-button color="primary" (click)="saveFieldConfig()">Save</button>
+      <button mat-button color="warn" (click)="cancelEdit()">Cancel</button>
+    </div>
+
+  </form>
+</div>

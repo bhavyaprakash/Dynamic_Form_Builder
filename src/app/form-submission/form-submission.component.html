@@ -1,0 +1,74 @@
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h2>{{ formTemplate?.name }}</h2>
+            <p *ngIf="!isViewMode && userRole === 'admin'" class="preview-message">
+                This form is in preview mode.
+              </p>
+          </div>
+      <form [formGroup]="submissionForm" (ngSubmit)="onSubmit()">
+        <div *ngFor="let field of formTemplate.fields">
+  
+          <!-- Text Input & Textarea -->
+          <mat-form-field *ngIf="field.type === 'text' || field.type === 'textarea'" appearance="outline">
+            <mat-label>{{ field.label }}</mat-label>
+            <input matInput *ngIf="field.type === 'text'" [formControlName]="field.label">
+            <textarea matInput *ngIf="field.type === 'textarea'" [formControlName]="field.label"></textarea>
+            <mat-hint>{{ field.helpText }}</mat-hint>
+            <mat-error *ngIf="submissionForm.get(field.label)?.errors?.['required']">
+              This field is required.
+            </mat-error>
+            <mat-error *ngIf="submissionForm.get(field.label)?.errors?.['minlength']">
+              Minimum {{ field.validation?.minLength }} characters required.
+            </mat-error>
+            <mat-error *ngIf="submissionForm.get(field.label)?.errors?.['maxlength']">
+              Maximum {{ field.validation?.maxLength }} characters allowed.
+            </mat-error>
+            <mat-error *ngIf="submissionForm.get(field.label)?.errors?.['pattern']">
+              Invalid format.
+            </mat-error>
+          </mat-form-field>
+  
+          <!-- Dropdown -->
+          <mat-form-field *ngIf="field.type === 'select'" appearance="outline">
+            <mat-label>{{ field.label }}</mat-label>
+            <mat-select [formControlName]="field.label">
+              <mat-option *ngFor="let option of field.options" [value]="option">{{ option }}</mat-option>
+            </mat-select>
+            <mat-hint>{{ field.helpText }}</mat-hint>
+          </mat-form-field>
+  
+          <!-- Checkbox -->
+          <div *ngIf="field.type === 'checkbox'">
+            <label>{{ field.label }}</label>
+            <mat-checkbox *ngFor="let option of field.options" [formControlName]="field.label">
+              {{ option }}
+            </mat-checkbox>
+          </div>
+  
+          <!-- Date Picker -->
+          <mat-form-field *ngIf="field.type === 'date'" appearance="outline">
+            <mat-label>{{ field.label }}</mat-label>
+            <input matInput [matDatepicker]="picker" [formControlName]="field.label">
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+  
+          <!-- Radio Buttons -->
+          <div *ngIf="field.type === 'radio'">
+            <label>{{ field.label }}</label>
+            <mat-radio-group [formControlName]="field.label">
+              <mat-radio-button *ngFor="let option of field.options" [value]="option">{{ option }}</mat-radio-button>
+            </mat-radio-group>
+          </div>
+  
+        </div>
+  
+        <!-- Submit button (Hidden in View Mode) -->
+        <button *ngIf="!isViewMode && userRole === 'user'" mat-raised-button color="primary" type="submit" [disabled]="submissionForm.invalid" class="submit">
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+  
