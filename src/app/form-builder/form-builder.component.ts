@@ -10,6 +10,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog } from '@angular/material/dialog';
 import { EditFieldDialogComponent } from '../edit-field-dialog/edit-field-dialog.component';
+import { Store } from '@ngrx/store';
+// import { FormTemplate } from '../state/form-templates/form-templates.model';
+// import { FormTemplateActions } from '../state/form-templates/form-templates.actions';
 
 interface FormField {
   type: string;
@@ -124,10 +127,38 @@ export class FormBuilderComponent {
     this.editingFormId = null;
   }
   
+  // resetForm() {
+  //   this.formFields = []; // Clear all added fields
+  //   this.selectedField = null; // Reset selected field (if any)
+  // }
+  
+  // saveForm() {
+  //   if (!this.formName) {
+  //     alert("Please enter a form name before saving.");
+  //     return;
+  //   }
+
+  //   const formTemplate: FormTemplate = {
+  //     id: this.editingFormId || Math.floor(Math.random() * 100) + 1,
+  //     name: this.formName,
+  //     fields: this.formFields
+  //   };
+
+  //   if (this.editingFormId) {
+  //     this.store.dispatch(FormTemplateActions.updateFormTemplate({
+  //       formTemplate: { id: formTemplate.id, changes: formTemplate }
+  //     }));
+  //   } else {
+  //     this.store.dispatch(FormTemplateActions.addFormTemplate({ formTemplate }));
+  //   }    
+
+  //   alert(this.editingFormId ? 'Form Updated Successfully!' : 'Form Saved Successfully!');
+  //   this.resetForm();
+  // }
+
   resetForm() {
-    this.formFields = []; // Clear all added fields
-    this.selectedField = null; // Reset selected field (if any)
+    this.formFields = [];
+    this.formName = "";
+    this.editingFormId = null;
   }
-  
-  
 }

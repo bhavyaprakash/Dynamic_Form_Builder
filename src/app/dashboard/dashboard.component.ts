@@ -72,12 +72,6 @@ export class DashboardComponent {
   console.log("Submitted Forms Data Source:", this.submittedDataSource);
   }
 
-  // loadForm(formTemplate: any) {
-  //   localStorage.setItem('loadedForm', JSON.stringify(formTemplate));
-  //   this.router.navigate(['/fill-form']);
-  //   console.log("submit",JSON.stringify(formTemplate))
-  // }
-
   loadForm(element: any, viewOnly = false) {
     const formToLoad = { ...element, isViewMode: viewOnly };
     localStorage.setItem('loadedForm', JSON.stringify(formToLoad));
