@@ -2,21 +2,21 @@ import { TestBed } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
 import { Observable } from 'rxjs';
 
-import { FormTemplatesEffects } from './form-templates.effects';
+import { FormTemplateEffects } from './form-templates.effects';
 
 describe('FormTemplatesEffects', () => {
   let actions$: Observable<any>;
-  let effects: FormTemplatesEffects;
+  let effects: FormTemplateEffects;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        FormTemplatesEffects,
+        FormTemplateEffects,
         provideMockActions(() => actions$)
       ]
     });
 
-    effects = TestBed.inject(FormTemplatesEffects);
+    effects = TestBed.inject(FormTemplateEffects);
   });
 
   it('should be created', () => {

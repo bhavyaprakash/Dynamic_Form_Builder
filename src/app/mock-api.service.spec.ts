@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { FormService } from './form.service';
+import { MockAPIService } from './mock-api.service';
 
-describe('FormService', () => {
-  let service: FormService;
+describe('MockAPIService', () => {
+  let service: MockAPIService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(FormService);
+    service = TestBed.inject(MockAPIService);
   });
 
   it('should be created', () => {

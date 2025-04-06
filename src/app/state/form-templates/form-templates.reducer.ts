@@ -8,11 +8,14 @@ export const formTemplatesFeatureKey = 'formTemplates';
 
 export interface State extends EntityState<FormTemplate> {
   // additional entity state properties
+  editingFormTemplate: FormTemplate | null;
 }
 
 export const adapter: EntityAdapter<FormTemplate> = createEntityAdapter<FormTemplate>();
 
-export const initialState: State = adapter.getInitialState({});
+export const initialState: State = adapter.getInitialState({
+  editingFormTemplate: null,
+});
 
 export const reducer = createReducer(
   initialState,
@@ -51,6 +54,16 @@ export const reducer = createReducer(
   on(FormTemplateActions.clearFormTemplates,
     state => adapter.removeAll(state)
   ),
+
+  on(FormTemplateActions.setEditingFormTemplate, (state, { formTemplate }) => ({
+    ...state,
+    editingFormTemplate: formTemplate,
+  })),
+  on(FormTemplateActions.clearEditingFormTemplate, (state) => ({
+    ...state,
+    editingFormTemplate: null
+  })),
+  
 );
 
 export const formTemplatesFeature = createFeature({

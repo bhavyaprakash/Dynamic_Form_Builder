@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { AuthService } from '../auth.service';
+import { MockApiService } from '../mock-api.service';
 
 @Component({
   selector: 'app-form-submission',
@@ -33,15 +34,14 @@ export class FormSubmissionComponent {
   isViewMode = false;
   userRole: string | null;
 
-  constructor(private fb: FormBuilder, private router: Router,private authService: AuthService,) {
+  constructor(private fb: FormBuilder, private router: Router,private authService: AuthService, private mockApi: MockApiService) {
     this.userRole = this.authService.getRole();
   }
-
+  
   ngOnInit() {
-    const storedForm = localStorage.getItem('loadedForm');
-    
+    const storedForm = this.mockApi.getLoadedForm();
     if (storedForm) {
-      this.formTemplate = JSON.parse(storedForm);
+      this.formTemplate = storedForm;
       this.isViewMode = !!this.formTemplate.isViewMode;
   
       if (!Array.isArray(this.formTemplate.fields)) {
@@ -102,21 +102,15 @@ export class FormSubmissionComponent {
     }
   
     const submittedData = {
-      ...this.formTemplate, // keep id, name, fields (structure)
-      submittedValues: this.submissionForm.getRawValue(), // save values separately
+      ...this.formTemplate,
+      submittedValues: this.submissionForm.getRawValue(),
       submittedAt: new Date().toISOString()
     };
   
-    const storedSubmissions = localStorage.getItem('submittedForms');
-    let submittedForms = storedSubmissions ? JSON.parse(storedSubmissions) : [];
-  
-    submittedForms.push(submittedData);
-    localStorage.setItem('submittedForms', JSON.stringify(submittedForms));
-  
-    alert("Form submitted successfully!");
-    this.router.navigate(['/dashboard']);
+    this.mockApi.saveSubmittedForm(submittedData).subscribe(() => {
+      alert("Form submitted successfully!");
+      this.router.navigate(['/dashboard']);
+    });
   }
-  
-  
   
 }

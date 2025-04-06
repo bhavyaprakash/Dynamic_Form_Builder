@@ -5,104 +5,69 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
-import { FormService } from '../form.service';
+import { Store } from '@ngrx/store';
+import { selectAllFormTemplates } from '../state/form-templates/form-template.selectors';
+import { FormTemplateActions } from '../state/form-templates/form-templates.actions';
+import { MockApiService } from '../mock-api.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatTableModule, MatIconModule],
+  imports: [CommonModule, MatButtonModule, MatTableModule, MatIconModule, MatTooltipModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
 
-
-  DEFAULT_TEMPLATES = [
-    {
-      id: 1,
-      name: 'Employee Feedback Form',
-      fields: [
-        { type: 'text', label: 'Name', required: true },
-        { type: 'textarea', label: 'Feedback', required: true },
-        { type: 'radio', label: 'Satisfaction Level', options: ['Good', 'Average', 'Bad'] },
-      ],
-    },
-    {
-      id: 2,
-      name: 'Event Registration Form',
-      fields: [
-        { type: 'text', label: 'Full Name', required: true },
-        { type: 'text', label: 'Email', required: true },
-        { type: 'date', label: 'Event Date' },
-      ],
-    },
-  ];
-  
   formTemplates: any[] = [];
   displayedColumns: string[] = ['name', 'actions']; // Define columns
   dataSource: any[] = [];
   submittedDataSource: any[] = [];
-
+  submittedFormIds: number[] = [];
   userRole: string | null;
 
-  constructor(private authService: AuthService, private router: Router, private formService: FormService) {
+  constructor(private authService: AuthService, private router: Router, private store: Store, 
+    private mockApi: MockApiService,) {
     this.userRole = this.authService.getRole();
   }
 
   ngOnInit() {
-    console.log("Loading form templates...");
+    this.store.select(selectAllFormTemplates).subscribe((templates) => {
+      this.dataSource = templates;
+      console.log('Form Templates from Store:', this.dataSource);
+    });
   
-    // Load stored forms from localStorage
-    const storedForms = localStorage.getItem('formTemplates');
-  
-    if (storedForms && JSON.parse(storedForms).length > 0) {
-      this.dataSource = JSON.parse(storedForms);
-    } else {
-      console.log("No valid stored forms found. Using default templates.");
-      
-      // Use default templates and save them to localStorage
-      this.dataSource = [...this.DEFAULT_TEMPLATES];
-      localStorage.setItem('formTemplates', JSON.stringify(this.dataSource));
-    }
-  
-    const storedSubmissions = localStorage.getItem('submittedForms');
-  this.submittedDataSource = storedSubmissions ? JSON.parse(storedSubmissions) : [];
-
-  console.log("Final Data Source:", this.dataSource);
-  console.log("Submitted Forms Data Source:", this.submittedDataSource);
+    this.mockApi.getSubmittedForms().subscribe((submissions) => {
+      this.submittedDataSource = submissions;
+      this.submittedFormIds = submissions.map((form: { id: any; }) => form.id);
+      console.log("ids", this.submittedFormIds)
+    });
   }
-
+  
   loadForm(element: any, viewOnly = false) {
-    const formToLoad = { ...element, isViewMode: viewOnly };
-    localStorage.setItem('loadedForm', JSON.stringify(formToLoad));
+    this.mockApi.setLoadedForm(element, viewOnly);
     this.router.navigate(['/fill-form']);
-    console.log('Form to load:', formToLoad);
-
   }
   
 
   editForm(formTemplate: any) {
-    localStorage.setItem('editingForm', JSON.stringify(formTemplate));
+    this.store.dispatch(FormTemplateActions.setEditingFormTemplate({ formTemplate }));
     this.router.navigate(['/form-builder']);
   }
   
 
   deleteForm(id: number) {
-    this.formService.deleteForm(id); 
-    this.ngOnInit(); 
+    this.store.dispatch(FormTemplateActions.deleteFormTemplate({ id }));
   }
   
   deleteSubmitForm(id: number) {
-    const stored = localStorage.getItem('submittedForms');
-    let submittedForms = stored ? JSON.parse(stored) : [];
-  
-    submittedForms = submittedForms.filter((form: any) => form.id !== id);
-    localStorage.setItem('submittedForms', JSON.stringify(submittedForms));
-  
-    this.submittedDataSource = submittedForms; // Update the table
+    this.mockApi.deleteSubmittedForm(id).subscribe(() => {
+      this.mockApi.getSubmittedForms().subscribe((submissions) => {
+        this.submittedDataSource = submissions;
+      });
+    });
   }
-  
-  
   
   goToFormBuilder() {
     this.router.navigate(['/form-builder']);

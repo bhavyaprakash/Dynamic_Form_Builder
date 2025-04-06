@@ -1,72 +1,92 @@
 <div class="container">
-<div class="dashboard-container">
-  <!-- Logout button (Top-right corner) -->
-  <button class="logout-button" mat-raised-button color="warn" (click)="logout()">Logout</button>
+  <div class="dashboard-container">
+    <!-- Logout button (Top-right corner) -->
+    <button class="logout-button" mat-raised-button color="warn" (click)="logout()">Logout</button>
 
-  <h2>Dashboard</h2>
+    <h2>Dashboard</h2>
 
-  <!-- Show Form Builder button only for Admins -->
-  <button *ngIf="userRole === 'admin'" mat-raised-button color="primary" (click)="goToFormBuilder()" class="form-button">
-    New Form Template
-  </button>
-  <h2>New Forms</h2>
-</div>
-<div class="table-container">
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-    <!-- Form Name Column -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> Form Name </th>
-      <td mat-cell *matCellDef="let element"> {{ element.name }} </td>
+    <!-- Show Form Builder button only for Admins -->
+    <button *ngIf="userRole === 'admin'" mat-raised-button color="primary" (click)="goToFormBuilder()"
+      class="form-button">
+      New Form Template
+    </button>
+    <h2>New Forms</h2>
+  </div>
+  <div class="table-container">
+    <ng-container *ngIf="dataSource.length > 0; else noFormData">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <!-- Form Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Form Name </th>
+          <td mat-cell *matCellDef="let element"> {{ element.name }} </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button color="accent" (click)="loadForm(element)"
+              [disabled]="userRole === 'user' && submittedFormIds.includes(element.id)"
+              matTooltip="{{ userRole === 'user' && submittedFormIds.includes(element.id) ? 'You already submitted this form' : 'Open Form' }}">
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+
+            <button mat-icon-button color="primary" *ngIf="userRole === 'admin'" (click)="editForm(element)" matTooltip="Edit Form">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" *ngIf="userRole === 'admin'" (click)="deleteForm(element.id)" matTooltip="Delete Form">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
     </ng-container>
 
-    <!-- Actions Column -->
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef> Actions </th>
-      <td mat-cell *matCellDef="let element">
-        <button mat-icon-button color="accent" (click)="loadForm(element)"><mat-icon>open_in_new</mat-icon></button>
-        <button mat-icon-button color="primary" *ngIf="userRole === 'admin'" (click)="editForm(element)"><mat-icon>edit</mat-icon></button>
-        <button mat-icon-button color="warn" *ngIf="userRole === 'admin'" (click)="deleteForm(element.id)">
-          <mat-icon>delete</mat-icon>
-        </button>
+    <ng-template #noFormData>
+      <p class="no-data">No form templates available.</p>
+    </ng-template>
+  </div>
 
-      </td>
+
+  <div class="table-container">
+    <h2 class="submit-header">Submitted Forms</h2>
+
+    <ng-container *ngIf="submittedDataSource.length > 0; else noData">
+      <table mat-table [dataSource]="submittedDataSource" class="mat-elevation-z8">
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Form Name </th>
+          <td mat-cell *matCellDef="let element"> {{ element.name }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="submittedAt">
+          <th mat-header-cell *matHeaderCellDef> Submitted At </th>
+          <td mat-cell *matCellDef="let element"> {{ element.submittedAt | date:'short' }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button (click)="loadForm(element, true)" matTooltip="View Submitted Form">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" *ngIf="userRole === 'admin'" (click)="deleteSubmitForm(element.id)" matTooltip="Delete Submitted Form">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['name', 'submittedAt', 'actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['name', 'submittedAt', 'actions'];"></tr>
+      </table>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
-</div>
+    <ng-template #noData>
+      <p class="no-data">No submitted forms available.</p>
+    </ng-template>
+  </div>
 
-<div class="table-container">
-  <h2 class="submit-header">Submitted Forms</h2>
-  <table mat-table [dataSource]="submittedDataSource" class="mat-elevation-z8">
-    <!-- Form Name Column -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> Form Name </th>
-      <td mat-cell *matCellDef="let element"> {{ element.name }} </td>
-    </ng-container>
-
-    <!-- Submission Time Column -->
-    <ng-container matColumnDef="submittedAt">
-      <th mat-header-cell *matHeaderCellDef> Submitted At </th>
-      <td mat-cell *matCellDef="let element"> {{ element.submittedAt | date:'short' }} </td>
-    </ng-container>
-
-    <!-- Actions Column -->
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef> Actions </th>
-      <td mat-cell *matCellDef="let element">
-        <button mat-icon-button (click)="loadForm(element, true)">
-          <mat-icon>visibility</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" *ngIf="userRole === 'admin'" (click)="deleteSubmitForm(element.id)">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="['name', 'submittedAt', 'actions']"></tr>
-    <tr mat-row *matRowDef="let row; columns: ['name', 'submittedAt', 'actions'];"></tr>
-  </table>
-</div>
 </div>

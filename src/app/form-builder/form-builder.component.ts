@@ -1,9 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import {MatIconModule} from '@angular/material/icon';
-import { FormService } from '../form.service';
+import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,8 +10,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialog } from '@angular/material/dialog';
 import { EditFieldDialogComponent } from '../edit-field-dialog/edit-field-dialog.component';
 import { Store } from '@ngrx/store';
-// import { FormTemplate } from '../state/form-templates/form-templates.model';
-// import { FormTemplateActions } from '../state/form-templates/form-templates.actions';
+import { FormTemplate } from '../state/form-templates/form-templates.model';
+import { FormTemplateActions } from '../state/form-templates/form-templates.actions';
+import { selectEditingFormTemplate } from '../state/form-templates/form-template.selectors';
+import { Router } from '@angular/router';
 
 interface FormField {
   type: string;
@@ -30,12 +31,12 @@ interface FormField {
 @Component({
   selector: 'app-form-builder',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DragDropModule, MatIconModule, 
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, DragDropModule, MatIconModule,
     MatFormFieldModule, MatInputModule, MatCheckboxModule, MatButtonModule],
   templateUrl: './form-builder.component.html',
   styleUrl: './form-builder.component.css'
 })
-export class FormBuilderComponent {
+export class FormBuilderComponent implements OnInit {
 
   availableFields = [
     { type: 'text', label: 'Text Input' },
@@ -49,25 +50,24 @@ export class FormBuilderComponent {
   formFields: any[] = [];
   selectedField: FormField | null = null;
   fieldConfigForm!: FormGroup;
-  formName: string = ''; // Holds the form name entered by the user
+  formName: string = '';
   editingFormId: number | null = null;
 
 
-  constructor(private formService: FormService, private dialog: MatDialog) {
+  constructor(private router: Router, private store: Store, private dialog: MatDialog) {
     this.initForm();
   }
 
   ngOnInit() {
-    const storedForm = localStorage.getItem('editingForm');
+    this.store.select(selectEditingFormTemplate).subscribe((formTemplate) => {
+      if (formTemplate) {
+        this.editingFormId = formTemplate.id;
+        this.formName = formTemplate.name;
+        this.formFields = formTemplate.fields;
+      }
+    });
+  }
 
-    if (storedForm) {
-      const parsedForm = JSON.parse(storedForm);
-      this.editingFormId = parsedForm.id; // ✅ Set editingFormId
-      this.formFields = parsedForm.fields; // Load fields
-      this.formName = parsedForm.name; // Load form name
-      localStorage.removeItem('editingForm'); // Clear after loading
-    }
-}
 
   initForm() {
     this.fieldConfigForm = new FormGroup({
@@ -78,11 +78,16 @@ export class FormBuilderComponent {
     });
   }
 
-  drop(event: any) {
-    if (event.previousContainer === event.container) return;
-    const field = { ...event.previousContainer.data[event.previousIndex], required: false, helpText: '' };
-    this.formFields.push(field);
+  drop(event: CdkDragDrop<any[]>) {
+    if (event.previousContainer === event.container) {
+      this.formFields = [...this.formFields];
+      moveItemInArray(this.formFields, event.previousIndex, event.currentIndex);
+    } else {
+      const clonedItem = { ...event.previousContainer.data[event.previousIndex] };
+      this.formFields = [...this.formFields, clonedItem]; // ✅ Immutable push
+    }
   }
+
 
   editField(field: any) {
     console.log("field", field)
@@ -96,65 +101,50 @@ export class FormBuilderComponent {
         // Update the field with the result from the dialog
         const index = this.formFields.findIndex(f => f.label === field.label);
         if (index !== -1) {
-          this.formFields[index] = { ...this.formFields[index], ...result };
+          this.formFields = this.formFields.map((field, i) =>
+            i === index ? { ...field, ...result } : field
+          );
         }
       }
     });
   }
 
   deleteField(index: number) {
-    this.formFields.splice(index, 1);
-  }
+    this.formFields = this.formFields.filter((_, i) => i !== index);
+  }  
 
   saveForm() {
     if (!this.formName) {
       alert("Please enter a form name before saving.");
       return;
     }
-  
-    const formTemplate = {
-      id: this.editingFormId || Math.floor(Math.random() * 100) + 1, // Use existing ID if editing, otherwise generate a new one
+    if (!this.formFields.length) {
+      alert("Please add at least one field before saving the form.");
+      return;
+    }
+
+    const formTemplate: FormTemplate = {
+      id: this.editingFormId || Math.floor(Math.random() * 100) + 1,
       name: this.formName,
       fields: this.formFields
     };
-  
-    this.formService.saveForm(formTemplate);
+
+    if (this.editingFormId) {
+      this.store.dispatch(FormTemplateActions.updateFormTemplate({
+        formTemplate: {
+          id: formTemplate.id,
+          changes: formTemplate
+        }
+      }));
+    } else {
+      this.store.dispatch(FormTemplateActions.addFormTemplate({ formTemplate }));
+    }
+
     alert(this.editingFormId ? 'Form Updated Successfully!' : 'Form Saved Successfully!');
-  
-    // Reset form after saving
-    this.formFields = [];
-    this.formName = "";
-    this.editingFormId = null;
+    this.store.dispatch(FormTemplateActions.clearEditingFormTemplate());
+    this.resetForm();
+    this.router.navigate(['/dashboard']);
   }
-  
-  // resetForm() {
-  //   this.formFields = []; // Clear all added fields
-  //   this.selectedField = null; // Reset selected field (if any)
-  // }
-  
-  // saveForm() {
-  //   if (!this.formName) {
-  //     alert("Please enter a form name before saving.");
-  //     return;
-  //   }
-
-  //   const formTemplate: FormTemplate = {
-  //     id: this.editingFormId || Math.floor(Math.random() * 100) + 1,
-  //     name: this.formName,
-  //     fields: this.formFields
-  //   };
-
-  //   if (this.editingFormId) {
-  //     this.store.dispatch(FormTemplateActions.updateFormTemplate({
-  //       formTemplate: { id: formTemplate.id, changes: formTemplate }
-  //     }));
-  //   } else {
-  //     this.store.dispatch(FormTemplateActions.addFormTemplate({ formTemplate }));
-  //   }    
-
-  //   alert(this.editingFormId ? 'Form Updated Successfully!' : 'Form Saved Successfully!');
-  //   this.resetForm();
-  // }
 
   resetForm() {
     this.formFields = [];

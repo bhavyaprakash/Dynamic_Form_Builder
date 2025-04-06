@@ -18,5 +18,8 @@ export const FormTemplateActions = createActionGroup({
     'Delete FormTemplate': props<{ id: number }>(),
     'Delete FormTemplates': props<{ ids: string[] }>(),
     'Clear FormTemplates': emptyProps(),
+    'Set Editing FormTemplate': props<{ formTemplate: FormTemplate }>(),
+    'Clear Editing FormTemplate': emptyProps(),
+
   }
 });
