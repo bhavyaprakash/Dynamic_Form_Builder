@@ -3,6 +3,7 @@
 This project is a fully functional **drag-and-drop form builder** built with **Angular 14+**, **NgRx** for state management, and **localStorage** for persistence. It supports form creation, editing, submission, and role-based access (Admin/User).
 
 ---
+**Click on the image to watch demo**
 [![Watch the video](src/assets/img/Screenshot.png)](https://drive.google.com/file/d/1tz0fAHrSZH85Atx0t4Ion-AjAZJ6Wt5S/preview)
 
 
