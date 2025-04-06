@@ -3,9 +3,7 @@
 This project is a fully functional **drag-and-drop form builder** built with **Angular 14+**, **NgRx** for state management, and **localStorage** for persistence. It supports form creation, editing, submission, and role-based access (Admin/User).
 
 ---
-<h3>🎥 Demo Video</h3>
-<iframe src="https://drive.google.com/file/d/1tz0fAHrSZH85Atx0t4Ion-AjAZJ6Wt5S/preview" 
-        width="640" height="360" allow="autoplay"></iframe>
+[![Watch the video](src/assets/img/Screenshot form builder.png)](https://drive.google.com/file/d/1tz0fAHrSZH85Atx0t4Ion-AjAZJ6Wt5S/preview)
 
 
 ## 🚀 Features
@@ -34,22 +32,6 @@ This project is a fully functional **drag-and-drop form builder** built with **A
 
 ---
 
-## 📁 Project Structure
-src/ 
-├── app/ 
-│   ├── auth/ # Authentication (login, service) 
-│   ├── dashboard/ # Dashboard with form templates and submissions
-│   ├── form-builder/ # Drag-and-drop form builder 
-│   ├── form-submission/ # Submission and view mode 
-│   ├── state/ # NgRx store (actions, reducers, selectors) 
-│   ├── shared/ # Reusable services, interfaces 
-│   └── app.config.ts # Standalone Angular configuration
-
-## Roles
-Role	Permissions
-Admin	Can create/edit/delete/preview templates and delete/preview form submission 
-User	Can fill and submit/ view submitted forms only
-
 ## State Management
 NgRx Store manages all form templates. (Create/Edit/View/Delete Form Templates)
 
@@ -63,8 +45,8 @@ Created Mock API Functions for Form Submission Component CRUD Operation
 
 - Open the app at `http://localhost:4200`
 - Select a role:
-  - **Admin** – Can create/edit/delete form templates
-  - **User** – Can only fill and submit forms
+  - **Admin** – Can create/edit/delete/preview templates and delete/preview form submission 
+  - **User** – Can only fill and submit/ view submitted forms only
 
 ---
 
@@ -91,7 +73,7 @@ Created Mock API Functions for Form Submission Component CRUD Operation
 #### 🔗 Preview Template
 
 - Click the 1st/link icon next to a form to preview it and check the working functionality.
-Note: You cannot submit it as it is in preview mode just to check the functionality.
+- Note: You cannot submit it as it is in preview mode just to check the functionality.
 
 ---
 
@@ -140,6 +122,6 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 Test Case for 3 components Dashboard, Form-Builder and Form- Submission
 
-ng test --include src/app/dashboard/dashboard.component.spec.ts
-ng test --include src/app/form-builder/form-builder.component.spec.ts
-ng test --include src/app/form-submission/form-submission.component.spec.ts
+- ng test --include src/app/dashboard/dashboard.component.spec.ts
+- ng test --include src/app/form-builder/form-builder.component.spec.ts
+- ng test --include src/app/form-submission/form-submission.component.spec.ts
