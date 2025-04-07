@@ -8,7 +8,7 @@ export const authGuard: CanActivateFn = (route, state) => {
 
   const userRole = authService.getRole();
   if (state.url === '/form-builder' && userRole !== 'admin') {
-    router.navigate(['/login']); // Redirect Users back to Dashboard
+    router.navigate(['/login']); // Redirect Users back to Login
     return false;
   }
 

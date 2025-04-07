@@ -21,7 +21,7 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   login() {
-    this.authService.login(this.selectedRole); // Use login instead of setRole
+    this.authService.login(this.selectedRole); 
   }
   
 }

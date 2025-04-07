@@ -85,7 +85,6 @@ export class EditFieldDialogComponent implements OnInit{
     }
   }
 
-  // Cancel action to close the dialog without saving
   cancelEdit() {
     this.dialogRef.close();
   }
